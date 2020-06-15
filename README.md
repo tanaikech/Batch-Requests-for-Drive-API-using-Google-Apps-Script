@@ -319,6 +319,43 @@ function changePermissionsOfFiles() {
 }
 ```
 
+#### Transferring owner of files
+
+In this sample script, the owner of files are transferred to the user of `"### email address ###"`. So when you use this, please be careful. I recommend to use a sample file.
+
+When I tested this at January 31, 2020, an error like `there is no function to change the owner of this item yet (currently under development)` occurred. But now, I could confirm that this got to be able to be used. By this, the owner of a lot of files can be transferred by reducing both the process cost and the quota cost.
+
+```javascript
+function changeOwnerOfFiles() {
+  const email = "### email address ###"; // Please set the email you want to give the owner permission.
+  const fileIds = [
+    "### fileId 1###",
+    "### fileId 2###",
+    "### fileId 2###",
+    ,
+    ,
+    ,
+  ];
+
+  const requests = fileIds.map((id) => ({
+    method: "POST",
+    endpoint: `https://www.googleapis.com/drive/v3/files/${id}/permissions?transferOwnership=true`,
+    requestBody: {
+      role: "owner",
+      type: "user",
+      emailAddress: email,
+    },
+  }));
+  const res = BatchRequest.EDo({
+    batchPath: "batch/drive/v3",
+    requests: requests,
+  });
+  console.log(res);
+}
+```
+
+- When `sendNotificationEmail=false` is used, an error of `The sendNotificationEmail parameter is only applicable for permissions of type 'user' or 'group', and must not be disabled for ownership transfers.` occurs. So please be careful this.
+
 ## IMPORTANT
 
 - At the batch requests, 100 API requests can be run with the asynchronous process as one API call.
